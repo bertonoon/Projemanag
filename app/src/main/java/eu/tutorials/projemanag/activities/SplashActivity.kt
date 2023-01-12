@@ -1,16 +1,14 @@
-package eu.tutorials.projemanag
+package eu.tutorials.projemanag.activities
 
 import android.content.Intent
 import android.graphics.Typeface
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.WindowInsets
-import android.view.WindowManager
 import eu.tutorials.projemanag.databinding.ActivitySplashBinding
-import eu.tutorials.projemanag.utilis.SetFlagsFullScreen
+import eu.tutorials.projemanag.firebase.FirestoreClass
+import eu.tutorials.projemanag.utils.SetFlagsFullScreen
 
 class SplashActivity : AppCompatActivity() {
     private var binding : ActivitySplashBinding? = null
@@ -27,9 +25,18 @@ class SplashActivity : AppCompatActivity() {
         binding?.tvAppName?.typeface = typeFace
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(
-                Intent(this@SplashActivity
-                    ,IntroActivity::class.java))
+
+            var currentUserID = FirestoreClass().getCurrentUserId()
+
+            if(currentUserID.isNotEmpty()){
+                startActivity(Intent(this,
+                    MainActivity::class.java))
+                finish()
+            } else {
+                startActivity(Intent(this@SplashActivity,
+                    IntroActivity::class.java))
+                finish()
+            }
         }, 2500)
     }
 }

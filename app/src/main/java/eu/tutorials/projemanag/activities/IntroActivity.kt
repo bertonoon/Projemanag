@@ -1,15 +1,12 @@
-package eu.tutorials.projemanag
+package eu.tutorials.projemanag.activities
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.WindowInsets
-import android.view.WindowManager
 import eu.tutorials.projemanag.databinding.ActivityIntroBinding
-import eu.tutorials.projemanag.utilis.SetFlagsFullScreen
+import eu.tutorials.projemanag.utils.SetFlagsFullScreen
 
-class IntroActivity : AppCompatActivity() {
+class IntroActivity : BaseActivity() {
     private var binding : ActivityIntroBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,10 +16,10 @@ class IntroActivity : AppCompatActivity() {
         SetFlagsFullScreen().set(window)
 
         binding?.btnSignUpIntro?.setOnClickListener{
-            startActivity(Intent(this@IntroActivity,SignUpActivity::class.java))
+            startActivity(Intent(this@IntroActivity, SignUpActivity::class.java))
         }
         binding?.btnSignInIntro?.setOnClickListener{
-            startActivity(Intent(this@IntroActivity,SignInActivity::class.java))
+            startActivity(Intent(this@IntroActivity, SignInActivity::class.java))
         }
     }
 }

@@ -1,7 +1,6 @@
-package eu.tutorials.projemanag.utilis
+package eu.tutorials.projemanag.utils
 
 import android.os.Build
-import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
