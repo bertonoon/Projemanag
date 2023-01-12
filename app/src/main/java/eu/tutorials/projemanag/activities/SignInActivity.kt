@@ -1,17 +1,15 @@
 package eu.tutorials.projemanag.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import eu.tutorials.projemanag.R
 import eu.tutorials.projemanag.databinding.ActivitySignInBinding
+import eu.tutorials.projemanag.firebase.FirestoreClass
 import eu.tutorials.projemanag.models.User
 import eu.tutorials.projemanag.utils.SetFlagsFullScreen
 
@@ -56,9 +54,7 @@ class SignInActivity : BaseActivity() {
                 .addOnCompleteListener(this) { task ->
                     hideProgressDialog()
                     if (task.isSuccessful) {
-                        val user = auth.currentUser?.email
-                        startActivity(Intent(this,MainActivity::class.java))
-                        finish()
+                        FirestoreClass().loadUserData(this@SignInActivity)
                     } else {
                         Toast.makeText(this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show()

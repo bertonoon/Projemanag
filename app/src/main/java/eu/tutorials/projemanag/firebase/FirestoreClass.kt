@@ -1,11 +1,12 @@
 package eu.tutorials.projemanag.firebase
 
+import android.app.Activity
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import eu.tutorials.projemanag.activities.MainActivity
+import eu.tutorials.projemanag.activities.MyProfileActivity
 import eu.tutorials.projemanag.activities.SignInActivity
 import eu.tutorials.projemanag.activities.SignUpActivity
 import eu.tutorials.projemanag.models.User
@@ -37,18 +38,37 @@ class FirestoreClass {
         return currentUserID
     }
 
-    fun signInUser(activity: SignInActivity){
+    fun loadUserData(activity: Activity){
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserId())
             .get()
             .addOnSuccessListener { document ->
-                val loggedInUser = document.toObject(User::class.java)
-                if (loggedInUser != null) {
-                    activity.signInSuccess(loggedInUser)
+                val loggedInUser = document.toObject(User::class.java)!!
+
+                when(activity){
+                    is SignInActivity -> {
+                        activity.signInSuccess(loggedInUser)
+                    }
+                    is MainActivity -> {
+                        activity.updateNavigationUserDetails(loggedInUser)
+                    }
+                    is MyProfileActivity ->{
+                        activity.setUserDataInUI(loggedInUser)
+                    }
                 }
             }
             .addOnFailureListener{
-                Log.e("SignInUser", "Error with signInUser")
+                e->
+                when(activity){
+                    is SignInActivity -> {
+                        activity.hideProgressDialog()
+
+                    }
+                    is MainActivity -> {
+                        activity.hideProgressDialog()
+                    }
+                }
+                Log.e("SignInUser", "Error writing document",e)
             }
     }
 
