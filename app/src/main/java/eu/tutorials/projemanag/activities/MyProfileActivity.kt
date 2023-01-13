@@ -45,10 +45,6 @@ class MyProfileActivity : BaseActivity()  {
     private var mProfileImageURL : String = ""
     private lateinit var mUserDetails : User
 
-    companion object {
-        private const val GALLERY_CODE = 1
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyProfileBinding.inflate(layoutInflater)
@@ -57,7 +53,7 @@ class MyProfileActivity : BaseActivity()  {
         FirestoreClass().loadUserData(this)
 
         binding?.ivUserImage?.setOnClickListener{
-            choosePhotoFromGallery()
+            Constants.choosePhotoFromGallery(this)
         }
         binding?.btnUpdate?.setOnClickListener{
             if(mSelectedImageFileUri != null){
@@ -70,31 +66,6 @@ class MyProfileActivity : BaseActivity()  {
 
     }
 
-    private fun choosePhotoFromGallery(){
-        Dexter.withContext(this@MyProfileActivity)
-            .withPermission(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ).withListener(object: PermissionListener{
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        startActivityForResult(galleryIntent, GALLERY_CODE)
-                }
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    Toast.makeText(
-                        this@MyProfileActivity,
-                        "Permission denied.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?
-                ) {
-                    showRationaleDialogForPermissions()
-                }
-            }).onSameThread().check()
-    }
-
     private fun setupActionBar() {
         val toolbar: Toolbar = findViewById(R.id.toolbar_my_profile_activity)
         setSupportActionBar(toolbar)
@@ -103,26 +74,6 @@ class MyProfileActivity : BaseActivity()  {
         actionBar?.title = resources.getString(R.string.my_profile_title)
         toolbar.setNavigationOnClickListener { finish() }
 
-    }
-
-    private fun showRationaleDialogForPermissions() {
-        AlertDialog.Builder(this@MyProfileActivity).setMessage(
-            "It looks like you have turned off permission required for this feature." +
-                    "It can be enabled under the Application Settings.")
-            .setPositiveButton("Go to settings"){
-                    _,_ ->
-                try {
-                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    val uri = Uri.fromParts("package",packageName,null)
-                    intent.data = uri
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException){
-                    e.printStackTrace()
-                }
-            }.setNegativeButton("Cancel"){
-                    dialog,_ ->
-                dialog.dismiss()
-            }.show()
     }
 
     fun setUserDataInUI(user : User){
@@ -145,7 +96,7 @@ class MyProfileActivity : BaseActivity()  {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == GALLERY_CODE) {
+            if (requestCode == Constants.GALLERY_CODE) {
                 if (data != null) {
                     mSelectedImageFileUri = data.data!!
                     try {
@@ -174,8 +125,8 @@ class MyProfileActivity : BaseActivity()  {
         if(mSelectedImageFileUri != null){
             val sRef : StorageReference = FirebaseStorage
                 .getInstance()
-                .reference.child("USER_IMAGE"+System.currentTimeMillis()+"."+getFileExtension(
-                    mSelectedImageFileUri!!
+                .reference.child("USER_IMAGE"+System.currentTimeMillis()+"."+ Constants.getFileExtension(
+                    mSelectedImageFileUri!!,this@MyProfileActivity
                 ))
 
             sRef.putFile(mSelectedImageFileUri!!).addOnSuccessListener {
@@ -197,13 +148,6 @@ class MyProfileActivity : BaseActivity()  {
                 hideProgressDialog()
             }
         }
-    }
-
-    private fun getFileExtension(uri: Uri) : String?{
-        return MimeTypeMap
-            .getSingleton()
-            .getExtensionFromMimeType(
-                contentResolver.getType(uri))
     }
 
     fun profileUpdateSuccess(){
@@ -235,7 +179,6 @@ class MyProfileActivity : BaseActivity()  {
         }
 
     }
-
 
 }
 

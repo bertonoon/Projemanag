@@ -20,7 +20,8 @@
             android:name=".activities.CreateBoardActivity"
             android:exported="false"
             android:screenOrientation="fullSensor"
-            android:theme="@style/Theme.Projemanag.NoActionBar">
+            android:theme="@style/Theme.Projemanag.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

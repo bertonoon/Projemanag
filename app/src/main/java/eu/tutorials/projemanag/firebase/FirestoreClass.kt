@@ -6,10 +6,8 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import eu.tutorials.projemanag.activities.MainActivity
-import eu.tutorials.projemanag.activities.MyProfileActivity
-import eu.tutorials.projemanag.activities.SignInActivity
-import eu.tutorials.projemanag.activities.SignUpActivity
+import eu.tutorials.projemanag.activities.*
+import eu.tutorials.projemanag.models.Board
 import eu.tutorials.projemanag.models.User
 import eu.tutorials.projemanag.utils.Constants
 
@@ -26,6 +24,19 @@ class FirestoreClass {
             }
             .addOnFailureListener{
                 e->
+                Log.e(activity.javaClass.simpleName, "Error writing document")
+            }
+    }
+
+    fun createBoard(activity: CreateBoardActivity, boardInfo: Board){
+        mFireStore.collection(Constants.BOARDS)
+            .document()
+            .set(boardInfo, SetOptions.merge())
+            .addOnSuccessListener {
+                activity.boardCreatedSuccessfully()
+            }
+            .addOnFailureListener{
+                    e->
                 Log.e(activity.javaClass.simpleName, "Error writing document")
             }
     }

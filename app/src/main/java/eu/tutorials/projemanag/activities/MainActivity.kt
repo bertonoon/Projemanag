@@ -17,9 +17,11 @@ import eu.tutorials.projemanag.R
 import eu.tutorials.projemanag.databinding.ActivityMainBinding
 import eu.tutorials.projemanag.firebase.FirestoreClass
 import eu.tutorials.projemanag.models.User
+import eu.tutorials.projemanag.utils.Constants
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var binding : ActivityMainBinding? = null
+    private lateinit var mUserName : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,9 +32,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         binding?.navView?.setNavigationItemSelectedListener(this)
         FirestoreClass().loadUserData(this@MainActivity)
 
-        var fabCreateBoard : FloatingActionButton = findViewById(R.id.fab_create_board)
+        val fabCreateBoard : FloatingActionButton = findViewById(R.id.fab_create_board)
         fabCreateBoard.setOnClickListener{
-            startActivity(Intent(this@MainActivity,CreateBoardActivity::class.java))
+            val intent = Intent(this,CreateBoardActivity::class.java)
+            intent.putExtra(Constants.NAME,mUserName)
+            startActivity(intent)
         }
 
     }
@@ -96,6 +100,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun updateNavigationUserDetails(user: User) {
+        mUserName=user.name
         Glide
             .with(this)
             .load(user.image)
