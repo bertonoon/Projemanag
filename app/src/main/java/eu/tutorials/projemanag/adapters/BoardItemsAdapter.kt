@@ -38,7 +38,7 @@ open class BoardItemsAdapter(
                 .into(binding.ivBoardImage)
 
             binding.llBoard.setOnClickListener{
-                Toast.makeText(context,"Board open ${list[0].name}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"Board open ${list[adapterPosition].name}",Toast.LENGTH_SHORT).show()
             }
         }
 

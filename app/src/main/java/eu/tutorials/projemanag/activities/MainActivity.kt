@@ -28,6 +28,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var binding : ActivityMainBinding? = null
     private lateinit var mUserName : String
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -35,13 +36,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setContentView(binding?.root)
         setupActionBar()
         binding?.navView?.setNavigationItemSelectedListener(this)
-        FirestoreClass().loadUserData(this@MainActivity)
+        FirestoreClass().loadUserData(this@MainActivity,true)
 
         val fabCreateBoard : FloatingActionButton = findViewById(R.id.fab_create_board)
         fabCreateBoard.setOnClickListener{
             val intent = Intent(this,CreateBoardActivity::class.java)
             intent.putExtra(Constants.NAME,mUserName)
-            startActivity(intent)
+            startActivityForResult(intent, CREATE_BOARD_REQUEST_CODE)
         }
 
     }
@@ -58,10 +59,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
             }
         })
-        val board = Board("test","","testName")
-        val boardsList : ArrayList<Board> = ArrayList<Board>()
-        boardsList.add(board)
-        populateBoardsListToUI(boardsList)
 
     }
 
@@ -107,7 +104,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
-    fun updateNavigationUserDetails(user: User) {
+    fun updateNavigationUserDetails(user: User, readBoardsList: Boolean) {
         mUserName=user.name
         Glide
             .with(this)
@@ -118,13 +115,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         val tvUsername : TextView = findViewById(R.id.tv_username)
         tvUsername.text = user.name
+
+        if (readBoardsList){
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirestoreClass().getBoardsList(this)
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK && requestCode == MY_PROFILE_REQUEST_CODE){
             FirestoreClass().loadUserData(this)
-        } else {
+        } else if(resultCode == Activity.RESULT_OK && requestCode == CREATE_BOARD_REQUEST_CODE){
+            FirestoreClass().getBoardsList(this)
+        }
+        else {
             Log.e("Cancelled","Cancelled")
         }
     }
@@ -132,8 +138,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     fun populateBoardsListToUI (boardsList: ArrayList<Board>){
         val rvBoardsList : RecyclerView? = findViewById(R.id.rv_board_list)
         val tvNoBoardsAvailable : TextView? = findViewById(R.id.tv_no_boards_available)
-
-        hideProgressDialog()
         if(boardsList.size > 0){
             rvBoardsList?.visibility = View.VISIBLE
             tvNoBoardsAvailable?.visibility = View.GONE
@@ -151,6 +155,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object{
         const val MY_PROFILE_REQUEST_CODE : Int = 11
+        const val CREATE_BOARD_REQUEST_CODE : Int = 12
     }
 
 }

@@ -53,7 +53,9 @@ class MyProfileActivity : BaseActivity()  {
         FirestoreClass().loadUserData(this)
 
         binding?.ivUserImage?.setOnClickListener{
-            Constants.choosePhotoFromGallery(this)
+            //Constants.choosePhotoFromGallery(this)
+            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(galleryIntent, Constants.GALLERY_CODE)
         }
         binding?.btnUpdate?.setOnClickListener{
             if(mSelectedImageFileUri != null){

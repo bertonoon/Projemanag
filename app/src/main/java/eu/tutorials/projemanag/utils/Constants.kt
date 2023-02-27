@@ -27,6 +27,7 @@ object Constants {
     const val GALLERY_CODE = 1
     const val BOARDS : String = "boards"
     const val CREATED_BY : String = "createdBy"
+    const val ASSIGNED_TO : String = "assignedTo"
 
 
 

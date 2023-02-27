@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
@@ -36,7 +37,9 @@ class CreateBoardActivity : BaseActivity() {
         }
 
         binding.ivBoardImage.setOnClickListener{
-            Constants.choosePhotoFromGallery(this)
+            //Constants.choosePhotoFromGallery(this)
+            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(galleryIntent, Constants.GALLERY_CODE)
         }
 
         binding.btnCreate.setOnClickListener {
@@ -62,6 +65,7 @@ class CreateBoardActivity : BaseActivity() {
             "You have successfully created a board.",
             Toast.LENGTH_SHORT)
             .show()
+        setResult(Activity.RESULT_OK)
         hideProgressDialog()
         finish()
     }
@@ -111,12 +115,10 @@ class CreateBoardActivity : BaseActivity() {
                 showErrorSnackBar("Please enter a name")
                 false
             }
-            /*
             mSelectedImageFileUri == null -> {
                 showErrorSnackBar("Please choose image")
                 false
             }
-            */
             else -> {
                 true
             }

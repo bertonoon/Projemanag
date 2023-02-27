@@ -37,7 +37,6 @@ class SignInActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if(currentUser != null){
             reload();
@@ -55,6 +54,7 @@ class SignInActivity : BaseActivity() {
                     hideProgressDialog()
                     if (task.isSuccessful) {
                         FirestoreClass().loadUserData(this@SignInActivity)
+                        reload()
                     } else {
                         Toast.makeText(this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show()
